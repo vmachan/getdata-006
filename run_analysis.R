@@ -67,3 +67,6 @@ tidy_data <- cbind(X_mean, X_std, merged$y, merged$subject)
 tidy_data_avg <- ddply(tidy_data, .(subject, activity), function(x) colMeans(x[,1:79]))
 # Write this to a CSV file
 write.csv(tidy_data_avg, "UCI HAR Dataset/UCI_HAR_tidy_avg_data.csv", row.names=FALSE)
+# output the tidy data set
+tidy_data_avg
+
