@@ -10,39 +10,45 @@ This is the script `run_analysis.R`
 - creates a second, independent tidy dataset with an average of each variable
   for each each acticity and subject i.e. group over activity and subject. 
 - The second tidy data set is written to a csv file.
+- The second tidy data set is written to standard output.
   
-# run_analysis.R
-
-This is the R code that performs all the operations describe above. It loads the 'plyr' library initially which it uses later to perform the 
-operation of calculation means/averages across the first tidy data set.
-
 # The original data set
 
-The original data set is split into training and test sets (70% and 30%,
-respectively) where each partition is also split into three files that contain
-- measurements from the accelerometer and gyroscope
-- activity label
-- identifier of the subject
+The original test and train data sets are loaded into the following variables
+X_train, X_test
+y_train, y_test
+subject_train, subject_test
 
-# Getting and cleaning data
+# Merging the train and test data sets
 
-The first step of the preprocessing is to merge the training and test
-sets. Two sets combined, there are 10,299 instances where each
-instance contains 561 features (560 measurements and subject identifier). After
-the merge operation the resulting data, the table contains 562 columns (560
-measurements, subject identifier and activity label).
+The above original sets and then merged into the following variables
+X_merged
+y_merged
+subject_merged
+These 3 are then collected into 1 list (merged) with 3 named elements (X, y, subject)
 
-After the merge operation, mean and standard deviation features are extracted
-for further processing. Out of 560 measurement features, 46 mean and 33 standard
-deviations features are extracted, yielding a data frame with 79 features
-(additional two features are subject identifier and activity label).
+# Naming the features with the proper names from features.txt
 
-Next, the activity labels are replaced with descriptive activity names, defined
-in `activity_labels.txt` in the original data folder.
+features - Features from features.txt are loaded into this variable
+mean_features - The features having the word "mean" are extracted into this variable
+std_features - The features having the word "std" are extracted into this variable (standard deviations)
 
-The final step creates a tidy data set with the average of each variable for
-each activity and each subject. 10299 instances are split into 180 groups (30
-subjects and 6 activities) and 66 mean and standard deviation features are
-averaged for each group. The resulting data table has 180 rows and 79 columns.
-The tidy data set is exported to `UCI_HAR_tidy_data_avg.csv` where the first row is the
-header containing the names for each column.
+# Extract the means and standard deviations only from the merged dataset
+Using the above mean_features and std_features variables, the measurements for these variables only are extracted from the 
+merged X data set (merged$X) and populated into X_mean and X_std variables
+
+# Replacing activity numbers by activity labels
+The activity_labels.txt file contains the descriptions for the activity values. There are only 6 of them which are used to replace the
+activity values in the merged dataset (X$activity)
+
+# The first version of tidy_data 
+The individual data sets are now combined column-wise (cbind) and populated into the variable tidy_data
+
+# Compute the averages by subject and activity from above tidy data
+The variable tidy_data_avg is now populated with the summarized data which is obtained using the ddply method of the plyr library which
+is used to loop thru the tidy_data variable and apply the colMeans method to all columns in it except the subject and activity which are
+used to group the data. 
+
+# FInally the tidy_data_avg is printed to standard output
+tidy_data_avg has 180 records (barring the header), 6 for each of the 30 subjects and 79 metrics for the means and standard deviations
+
